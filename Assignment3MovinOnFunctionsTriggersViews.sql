@@ -2,14 +2,14 @@ use movinon_t6;
 go
 
 --1. function for years of service -- finished
---2. View Isvested, Years Service
+--2. View Isvested, Years Service -- finished
 --3. trigger to verfiy phone # -- finished
---4. view of Emp salary's
+--4. view of Emp salary's --finished
 --5. funtion for age + view 1 & 7 -- finished
 --6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
---7.view JobvenueReport
---8. view StorageRevenueReport
---9. function rent length, add to num 10
+--7.view JobRevenueReport --finished
+--8. view StorageRevenueReport 
+--9. function rent length, add to num 8
 --10. addition questions, functions in one view? FAQ
 
 
@@ -126,7 +126,23 @@ where phone = '5035742742'
 go
 
 --4. view of Emp salary's
+Create view dbo.EmployeeSalariesV
+as select
+    EmpID as 'Employee ID',
+    CONCAT_WS(', ', EmpLast, EmpFirst) as 'Full Name',
+    CASE
+        WHEN salary is null THEN cast(HourlyRate * 2080 as decimal(14, 2))
+        WHEN HourlyRate is null THEN cast(Salary as decimal(14,2))
+    END AS 'Earnings'
+FROM Employees
+;
+go
 
+--test
+select *
+from dbo.EmployeeSalariesV
+;
+go
 
 
 --5. funtion for age
@@ -166,15 +182,47 @@ from dbo.EmployeeAgeYoS
 go
 
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
+create view dbo.WarehouseMangerReportLabels
+as select
+;
+go
 
 
 --7.view JobvenueReport
+create view dbo.JobRevenueReportV
+as
+SELECT
+    JD.JobID as 'Job ID',
+    JO.MoveDate as 'Date',
+    CONCAT(DR.DriverFirst, ' ', DR.DriverLast) as 'Driver Name',
+	DR.mileageRate as 'Driver Rate',
+    JD.MileageActual as 'Mileage',
+    JD.WeightActual as 'Weight',
+    cast((JD.MileageActual * 0.7 + JD.WeightActual * 0.2)as decimal(14,2)) AS 'Income',
+    cast((JD.MileageActual * 0.7 + JD.WeightActual * 0.2 - (50 + JD.MileageActual * DR.MileageRate)) as decimal(14,2)) AS 'NetIncome',
+	cast((50 + (JD.MileageActual * DR.MileageRate))as decimal (14,2)) as 'Driver Pay'
+FROM JobDetails JD
+	INNER JOIN Drivers DR
+	ON JD.DriverID = DR.DriverID
+	INNER JOIN JobOrders as JO
+	ON JD.JobID = JO.JobID
 
+;
+go
+
+select *
+from dbo.JobRevenueReportV
+;
+go
 
 --8. view StorageRevenueReport
+create dbo.StorageRevenueReportV
+as select
+;
+go
 
 
---9. function rent length, add to num 10
+--9. function rent length, add to num 8
 
 
 --10. addition questions, functions in one view? FAQ

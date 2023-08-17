@@ -227,3 +227,116 @@ go
 
 --10. addition questions, functions in one view? FAQ
 
+--10.1 How many storage units did the company do last year?
+
+create function dbo.CountStorageUnitFN ()
+returns int
+as
+	begin
+	declare @UnitCount as int
+
+	select @UnitCount = count(UnitID)
+	from dbo.StorageUnits
+
+	return @unitCount
+	end
+;
+go
+
+/* As a View
+
+create view dbo.FAQ1View
+as select
+	Count(UnitID) as 'Number of Units'
+	from dbo.Storageunits
+;
+go
+*/
+
+select dbo.CountStorageUnitFN() as 'Number of Storage Units';
+go
+
+--Invalid object name 'dbo.StorageUnits'
+
+--10.2 What percentage of the customers rented at least one unit?
+
+alter function dbo.NumberOfCust()
+returns int
+as begin
+declare @Cust as decimal(7,2)
+	select @Cust = cast(count(CustID) as decimal(7,2))
+	from customers
+	Return @cust
+	end
+;
+go
+
+alter function dbo.NumberOfRentingCust()
+returns int
+as begin
+declare @cust as decimal(7,2)
+	select @cust = cast(count(custID) as decimal(7,2))
+	from unitrentals
+	return @cust
+	end
+;
+go
+
+alter function dbo.PercentOfCustomersRentingFN ()
+returns decimal(7,2)
+as
+	begin
+	declare @precentage as decimal(7,2)
+
+	select @precentage = dbo.NumberOfRentingCust() / dbo.NumberOfCust()
+	return @precentage
+	end
+;
+go
+	
+select dbo.PercentOfCustomersRentingFN()
+;
+go
+
+select dbo.NumberOfRentingCust(), dbo.NumberOfCust(), dbo.PercentOfCustomersRentingFN()
+;
+go
+
+-- 10.3 what was the greatest number of rents by any one indiviual?
+select CustID, count(unitID) from unitrentals
+group by CustID;
+go
+
+create function dbo.MostNumRented()
+returns int
+as
+begin
+declare @Highest as int
+select @Highest = greatest(count(UnitID)) from unitrentals group by CustID
+return @Highest
+end
+;
+go
+
+select dbo.MostNumRented() as 'Greatest Number of Rented Units by a customer'
+;
+go
+-- 10.4 what is the average length of a rental period?
+
+-- 10.5 what are the company peak months for rents?
+
+--10.6 View of all FAQs
+
+Create view FAQView
+as
+	Select
+		dbo.CountStorageUnitFN() as 'How many storage units did the company do last year?',
+		dbo.PercentOfCustomersRentingFN() as 'What percentage of the customers rented at least one unit?',
+		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?'
+;
+go
+
+select *
+from FAQView
+;
+go

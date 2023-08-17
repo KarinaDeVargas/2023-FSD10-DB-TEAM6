@@ -1,8 +1,5 @@
-
-
 use movinon_t6;
 go
-;
 
 --1. function for years of service -- finished
 --2. View Isvested, Years Service -- finished
@@ -187,6 +184,21 @@ go
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
 create view dbo.WarehouseMangerReportLabels
 as select
+	W.WarehouseID as 'Warehouse ID',
+	concat_ws(', ', E.EmpLast, E.EmpFirst) as 'Warehouse Manager',
+	concat_ws(', ', W.address, W.city, W.state, W.zip) as 'Address',
+	W.Phone as 'Phone Number'
+	from Warehouses as W
+	Inner join employees as E
+	on W.WarehouseID = E.WarehouseID
+	group by E.PositionID, W.WarehouseID, E.EmpLast, E.EmpFirst, W.Address, W.city, W.state, W.ZIP, W.phone
+	having E.PositionID = 2
+;
+go
+
+-- test
+select *
+from dbo.WarehouseMangerReportLabels
 ;
 go
 
@@ -219,14 +231,89 @@ from dbo.JobRevenueReportV
 go
 
 --8. view StorageRevenueReport
-create dbo.StorageRevenueReportV
-as select
+create function dbo.rentByWarehouse(@warehouseID as Char(5))
+returns decimal (14,2)
+as
+	begin
+	return
+	(select sum(U.rent)
+	from storageunits as U
+	inner join unitrentals as UR
+	on U.UnitID = UR.UnitID
+	group by UR.WarehouseID
+	having UR.WarehouseID = @warehouseID)
+	end
 ;
 go
 
+create function dbo.TotalRentalIncome()
+returns decimal (14,2)
+as
+	begin
+	return
+	(select sum(U.rent)
+	from storageunits as U
+	inner join unitrentals as UR
+	on U.UnitID = UR.UnitID)
+	end
+;
+go
+
+create view dbo.StorageRevenueReportV
+as select
+	concat_ws(', ', C.ContactLast, C.ContactFirst) as 'Customer Name',
+	R.rent as 'Monthly Rent',
+	UR.UnitID as 'Unit',
+	dbo.rentByWarehouse(UR.warehouseID) as 'Total rent for Warehouse',
+	dbo.TotalRentalIncome() as 'Income from all Warehouses'
+	from unitrentals as UR
+	inner join customers as C
+	On UR.CustID = C.CustID
+	Inner join storageunits as R
+	On UR.UnitID = R.UnitID
+;
+go
+
+select * from dbo.StorageRevenueReportV;
+go
+
+
 
 --9. function rent length, add to num 8
+alter function dbo.lengthOfRental(@UnitID as int)
+returns int
+as
+	begin
+	declare @month as int
+		select @month =	dateDiff(month, DateIn, GetDate())
+		from unitrentals
+		where UnitID = @UnitID
+		return @month
+	end
+;
+go
 
+select dbo.lengthOfRental(10);
+go
+
+alter view dbo.StorageRevenueReportV
+as select
+	concat_ws(', ', C.ContactLast, C.ContactFirst) as 'Customer Name',
+	R.rent as 'Monthly Rent',
+	UR.UnitID as 'Unit',
+	dbo.lengthOfRental(UR.UnitID) as 'Months Rented',
+	dbo.rentByWarehouse(UR.warehouseID) as 'Total rent for Warehouse',
+	dbo.TotalRentalIncome() as 'Income from all Warehouses'
+	from unitrentals as UR
+	inner join customers as C
+	On UR.CustID = C.CustID
+	Inner join storageunits as R
+	On UR.UnitID = R.UnitID
+;
+go
+
+select * from dbo.StorageRevenueReportV;
+go
 
 --10. addition questions, functions in one view? FAQ
 
@@ -339,6 +426,7 @@ as
 ;
 go
 
+--test
 select *
 from FAQView
 ;

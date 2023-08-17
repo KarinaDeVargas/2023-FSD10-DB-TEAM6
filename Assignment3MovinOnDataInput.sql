@@ -1,3 +1,12 @@
+/* Purpose: Populating tables in the database MovinOn_T6
+Script Date: August 18, 2023
+Developed by: Team 6
+				Benjamin Pye
+				Claudiu Terenche
+				Karina De Vargas Pereira
+*/
+
+-- switch to the current database 
 use movinOn_T6
 ;
 go

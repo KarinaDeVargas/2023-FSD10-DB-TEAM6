@@ -1,3 +1,12 @@
+/* Purpose: Database MovinOn_T6
+Script Date: August 18, 2023
+Developed by: Team 6
+				Benjamin Pye
+				Claudiu Terenche
+				Karina De Vargas Pereira
+*/
+
+-- switch to the current database
 use movinon_t6;
 go
 
@@ -17,6 +26,10 @@ go
 
 
 --1. function to calculate years of service
+if OBJECT_ID('dbo.getEmployeeYearsServedFn', 'Fn') is not null
+	drop function dbo.getEmployeeYearsServedFn
+;
+go
 
 create function dbo.getEmployeeYearsServedFn
 (
@@ -47,17 +60,22 @@ as
 ;
 go
 
-select * from dbo.employees;
+select * from HumanResources.Employees;
 go
 
 --test
 select EmpFirst, EmpLast, dbo.getEmployeeYearsServedFn(StartDate, EndDate) as 'Years Of Service'
-from Employees
+from HumanResources.Employees
 ;
 go
 
 
 -- 2.
+if OBJECT_ID('dbo.EmployeesStatusVestedView', 'V') is not null
+	drop view dbo.EmployeesStatusVestedView
+;
+go
+
 create view dbo.EmployeesStatusVestedView 
 as select
 	EmpID as 'Employee ID',
@@ -68,7 +86,7 @@ as select
         when EndDate IS NULL AND StartDate IS NOT NULL AND (DATEDIFF(YEAR, StartDate, GETDATE()) >= 5) then 'Fully Vested'
         else 'Not Vested'
     END as 'Vesting Status'
-from Employees
+from HumanResources.Employees
 ;
 go
 
@@ -82,8 +100,13 @@ go
 
 
 --3. trigger to verfiy phone #
-create trigger dbo.VerifyPhone
-on Dbo.Employees
+if OBJECT_ID('HumanResources.VerifyPhone', 'T') is not null
+	drop trigger HumanResources.VerifyPhone
+;
+go
+
+create trigger HumanResources.VerifyPhone
+on HumanResources.Employees
 for insert, update
 as
 	begin
@@ -116,16 +139,30 @@ as
 go
 
 --test
-select * from employees;
+select 
+	EmpID as 'Employee ID',
+	CONCAT_WS(' ' , EmpFirst, EmpLast) as 'Employee Full Name', 
+	Phone as 'Phone number',
+	substring([Phone], 1, 3) as 'Area Code',
+	Cell as 'Cell number',
+	substring(Cell, 1, 3) as 'Area Code',
+	state as 'State'
+from HumanResources.Employees
+;
 go
 
-update dbo.employees
-set phone = '111333999'
-where phone = '5035742742'
+update HumanResources.Employees
+set phone = '111333999'		-- 5035742742
+where phone = '5035742742'		-- 111333999
 ;
 go
 
 --4. view of Emp salary's
+if OBJECT_ID('dbo.EmployeeSalariesV', 'V') is not null
+	drop view dbo.EmployeeSalariesV
+;
+go
+
 Create view dbo.EmployeeSalariesV
 as select
     EmpID as 'Employee ID',
@@ -134,7 +171,7 @@ as select
         WHEN salary is null THEN cast(HourlyRate * 2080 as decimal(14, 2))
         WHEN HourlyRate is null THEN cast(Salary as decimal(14,2))
     END AS 'Earnings'
-FROM Employees
+FROM HumanResources.Employees
 ;
 go
 
@@ -145,7 +182,12 @@ from dbo.EmployeeSalariesV
 go
 
 
---5. funtion for age
+--5. function for age
+if OBJECT_ID('dbo.EmployeesAge', 'Fn') is not null
+	drop function dbo.EmployeesAge
+;
+go
+
 create function dbo.EmployeesAge
 (	
 	@EmpID as int
@@ -155,7 +197,7 @@ as
 	begin
 		return
 			(select  Datediff(year, DOB, getdate())
-			from Employees
+			from HumanResources.Employees
 			where EmpID = @empID)
 	end
 ;
@@ -163,9 +205,13 @@ go
 
 
 select dbo.EmployeesAge(empID), DOB
-from employees
+from HumanResources.employees
 ;
 go
+
+
+
+
 
 -- view for age and years of service
 Create view dbo.EmployeeAgeYoS
@@ -184,21 +230,6 @@ go
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
 create view dbo.WarehouseMangerReportLabels
 as select
-	W.WarehouseID as 'Warehouse ID',
-	concat_ws(', ', E.EmpLast, E.EmpFirst) as 'Warehouse Manager',
-	concat_ws(', ', W.address, W.city, W.state, W.zip) as 'Address',
-	W.Phone as 'Phone Number'
-	from Warehouses as W
-	Inner join employees as E
-	on W.WarehouseID = E.WarehouseID
-	group by E.PositionID, W.WarehouseID, E.EmpLast, E.EmpFirst, W.Address, W.city, W.state, W.ZIP, W.phone
-	having E.PositionID = 2
-;
-go
-
--- test
-select *
-from dbo.WarehouseMangerReportLabels
 ;
 go
 
@@ -316,82 +347,62 @@ select * from dbo.StorageRevenueReportV;
 go
 
 --10. addition questions, functions in one view? FAQ
-
 --10.1 How many storage units did the company do last year?
+if OBJECT_ID('dbo.CountStorageUnitFN', 'Fn') is not null
+	drop function dbo.CountStorageUnitFN
+;
+go
 
-create function dbo.CountStorageUnitFN ()
+-- create a function that calculates how many storage units did the company rent in a given year 
+create function dbo.CountStorageUnitFN (@Year int)
 returns int
 as
-	begin
-	declare @UnitCount as int
+begin
+    declare @StartDate date, @Count int;
 
-	select @UnitCount = count(UnitID)
-	from dbo.StorageUnits
+    set @StartDate = DATEFROMPARTS(@Year, 1, 1);
+   
+    select @Count = COUNT(*)
+    from Production.UnitRentals
+    where YEAR(DateIn) = @Year;
 
-	return @unitCount
-	end
+    return @Count;
+end
 ;
 go
 
-/* As a View
-
-create view dbo.FAQ1View
-as select
-	Count(UnitID) as 'Number of Units'
-	from dbo.Storageunits
+select dbo.CountStorageUnitFN(2016) as 'Number of Storage Units Rented in Given Year'
 ;
 go
-*/
 
-select dbo.CountStorageUnitFN() as 'Number of Storage Units';
-go
-
---Invalid object name 'dbo.StorageUnits'
 
 --10.2 What percentage of the customers rented at least one unit?
-
-alter function dbo.NumberOfCust()
-returns int
-as begin
-declare @Cust as decimal(7,2)
-	select @Cust = cast(count(CustID) as decimal(7,2))
-	from customers
-	Return @cust
-	end
+if OBJECT_ID('dbo.CalculateCustomerPercentageFn', 'Fn') is not null
+	drop function dbo.CalculateCustomerPercentageFn
 ;
 go
 
-alter function dbo.NumberOfRentingCust()
-returns int
-as begin
-declare @cust as decimal(7,2)
-	select @cust = cast(count(custID) as decimal(7,2))
-	from unitrentals
-	return @cust
-	end
-;
-go
-
-alter function dbo.PercentOfCustomersRentingFN ()
-returns decimal(7,2)
+create function dbo.CalculateCustomerPercentageFn ()
+returns decimal (5, 2)
 as
-	begin
-	declare @precentage as decimal(7,2)
-
-	select @precentage = dbo.NumberOfRentingCust() / dbo.NumberOfCust()
-	return @precentage
-	end
-;
-go
-	
-select dbo.PercentOfCustomersRentingFN()
-;
-go
-
-select dbo.NumberOfRentingCust(), dbo.NumberOfCust(), dbo.PercentOfCustomersRentingFN()
+BEGIN
+    declare
+	@TotalCustomers INT,
+	@CustomersWithUnits INT, 
+	@Percentage DECIMAL(5, 2);
+    select @TotalCustomers = count(CustID)
+	from Sales.Customers;
+    select @CustomersWithUnits = COUNT(CustID)
+    from Production.UnitRentals;
+		select @Percentage = (@CustomersWithUnits * 100.0) / @TotalCustomers;
+	return @Percentage;
+end
 ;
 go
 
+select dbo.CalculateCustomerPercentageFn() as 'Percent Of Customers Renting'
+;
+go
 -- 10.3 what was the greatest number of rents by any one indiviual?
 select CustID, count(unitID) from unitrentals
 group by CustID;

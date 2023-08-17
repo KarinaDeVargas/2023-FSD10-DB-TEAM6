@@ -1,13 +1,62 @@
-drop database MovinOn_T6;
-go
+/* Purpose: Creating database MovinOn_T6 in SQL Server, creating Tables and FK in database MovinOn_T6
 
-create database MovinOn_T6
+Script Date: August 18, 2023
+Developed by: Team 6
+				Benjamin Pye
+				Claudiu Terenche
+				Karina De Vargas Pereira
+*/
+
+-- if MovingOn_T6 database exists, then delet it
+drop database MovinOn_T6
 ;
 go
 
+-- create MovingOn_T6 database
+create database MovingOn_T6
+-- data file
+on primary
+(
+	-- 1) rows data logical filename
+	name = 'MovingOn_T6',
+	-- 2) rows data initial file size 
+	size = 12MB,
+	-- 3) rows data auto growth size
+	filegrowth = 8MB,
+	-- 4) rows data maximum size
+	maxsize = unlimited, -- 250MB
+	-- 5) rows data path and file name
+	filename = 'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\MovingOn_T6.mdf'
+)
+-- log file
+log on
+(
+	-- 1) log logical filename
+	name = 'MovingOn_T6_log',
+	-- 2) log initial file size (1/4 the rows data file size)
+	size = 3MB,
+	-- 3) log auto growth size
+	filegrowth = 10%,
+	-- 4) log maximum size
+	maxsize = 25MB,
+	-- 5) log path and file name
+	filename = 'C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\MovingOn_T6_log.ldf'
+)
+;
+go
+
+-- switch to the current database 
 use movinon_T6
 ;
 go
+
+
+/****** 1 - Customers table ******/
+if OBJECT_ID('Customers', 'U') is not null
+	drop table Sales.Customers
+;
+go
+
 create table customers
 (
 	CustID int not null,
@@ -25,6 +74,7 @@ create table customers
 ;
 go
 
+/****** 2 - Employees table ******/
 create table employees
 (
 	EmpID int not null,
@@ -51,6 +101,7 @@ create table employees
 ;
 go
 
+/****** 3 - Position table ******/
 create table positions
 (
 	positionID int not null,
@@ -60,6 +111,7 @@ create table positions
 ;
 go
 
+/****** 4 - Drivers table ******/
 create table drivers
 (
 	DriverID int not null,
@@ -83,6 +135,7 @@ create table drivers
 ;
 go
 
+/****** 5 - Vehicle table ******/
 Create table vehicles
 (
 	vehicleID char(7) not null,
@@ -93,7 +146,8 @@ Create table vehicles
 )
 ;
 go
-
+  
+/****** 6 - Warehouses table ******/
 create table warehouses
 (
 	WarehouseID char(5) not null,
@@ -109,7 +163,7 @@ create table warehouses
 ;
 go
 
-
+/****** 7 - StorageUnits table ******/
 create table storageunits
 (
 	UnitID INT not null,
@@ -121,6 +175,7 @@ create table storageunits
 ;
 go
 
+/****** 8 - UnitRentals table ******/
 Create table unitrentals
 (
 	CustID int not null,
@@ -138,6 +193,7 @@ Create table unitrentals
 ;
 go
 
+/****** 9 - JobOrders table ******/
 create table joborders
 (
 	JobID int not null,
@@ -159,6 +215,7 @@ create table joborders
 ;
 go
 
+/****** 10 - JobDetails table ******/
 create table jobdetails
 (
 	JobID int not null,
@@ -169,41 +226,63 @@ create table jobdetails
     constraint pk_JobDetails primary key clustered (JobID asc)
 )
 ;
+go
 
+/**** Apply Data Integrity ****/
+-- Foreign key constraints UnitRentals Table
 alter table unitrentals
 	add constraint fk_UnitRentals_UnitID foreign key (UnitID) references StorageUnits (UnitID)
+;
+go
+
 alter table unitrentals
 	add constraint fk_UnitRentals_WarehouseID foreign key (WarehouseID) references warehouses (WarehouseID)
+;
+go
+
 alter table unitrentals
 	add constraint fk_UnitRentals_CustID foreign key (CustID) references Customers (CustID)
 ;
 go
 
+-- Foreign key constraints StorageUnits Table
 alter table storageUnits
 	add constraint fk_StorageUnits_warehouses foreign key (WarehouseID) references warehouses (warehouseID)
 ;
 go
 
+-- Foreign key constraints Employees Table
 alter table employees
 	add constraint fk_Employees_Warehouses foreign key (WarehouseID) references warehouses (warehouseID)
 ;
-go
+go	   	   	  
 
 alter table employees
     add constraint fk_Employees_Positions foreign key (positionID) references positions (positionID)
 ;
 go
 
+
+-- Foreign key constraints JobOrders Table
 alter table joborders
 	add constraint fk_jobOrders_Customers foreign key (CustID) references customers (CustID)
 ;
 go
 
+
+-- Foreign key constraints Employees Table
 alter table jobdetails
 	add constraint fk_JobDetails_JobOrders foreign key (JobID) references JobOrders (JobID)
+;
+go
+
 alter table jobdetails
     add constraint fk_JobDetails_Vehicles foreign key (vehicleID) references vehicles (vehicleID)
+;
+go
+
 alter table jobdetails
     add constraint fk_JobDetails_Driver foreign key (DriverId) references Drivers (driverID)
 ;
 go
+

@@ -15,7 +15,7 @@ go
 --3. trigger to verfiy phone # -- finished
 --4. view of Emp salary's --finished
 --5. funtion for age + view 1 & 7 -- finished
---6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
+--6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone --
 --7.view JobRevenueReport --finished
 --8. view StorageRevenueReport 
 --9. function rent length, add to num 8
@@ -230,6 +230,21 @@ go
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
 create view dbo.WarehouseMangerReportLabels
 as select
+	W.WarehouseID as 'Warehouse ID',
+	concat_ws(', ', E.EmpLast, E.EmpFirst) as 'Warehouse Manager',
+	concat_ws(', ', W.address, W.city, W.state, W.zip) as 'Address',
+	W.Phone as 'Phone Number'
+	from Warehouses as W
+	Inner join employees as E
+	on W.WarehouseID = E.WarehouseID
+	group by E.PositionID, W.WarehouseID, E.EmpLast, E.EmpFirst, W.Address, W.city, W.state, W.ZIP, W.phone
+	having E.PositionID = 2
+;
+go
+
+-- test
+select *
+from dbo.WarehouseMangerReportLabels
 ;
 go
 

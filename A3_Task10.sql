@@ -8,7 +8,8 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
+use movinon_t6
+;
 go
 
 
@@ -116,38 +117,31 @@ go
 
 -- 10.4 what is the average length of a rental period?
 
+if OBJECT_ID('CalculateAvgRentalPeriod', 'Fn') is not null
+	drop Function CalculateAvgRentalPeriod
+;
+go
+
 CREATE FUNCTION CalculateAvgRentalPeriod()
 RETURNS DECIMAL(10, 2)
 AS
 BEGIN
-    DECLARE @TotalDays INT
-    DECLARE @TotalRentals INT
+    DECLARE @TotalMonths as INT,
+    @TotalRentals as INT,
+	@answer as decimal(10,2)
 
- 
-
-    SELECT @TotalDays = SUM(DATEDIFF(DAY, DateIn, DateOut)),
+    SELECT @TotalMonths = SUM(DATEDIFF(Month, DateIn, DateOut)),
            @TotalRentals = COUNT(UnitID)
-    FROM Rentals
+    FROM Production.UnitRentals;
 
- 
-
-    IF @TotalRentals > 0
-    BEGIN
-        RETURN CAST(@TotalDays AS DECIMAL(10, 2)) / @TotalRentals
-    END
-    ELSE
-    BEGIN
-        RETURN 0.00
-    END
-END
+  	select @answer = CAST(@Totalmonths AS DECIMAL(10, 2)) / @TotalRentals
+	return @answer
+end
 ;
 go
 
- 
-
- 
-
-SELECT dbo.CalculateAvgRentalPeriod() AS AvgRentalPeriod
+--test
+SELECT dbo.CalculateAvgRentalPeriod() AS 'Average Rental Period in Months'
 ;
 go
 

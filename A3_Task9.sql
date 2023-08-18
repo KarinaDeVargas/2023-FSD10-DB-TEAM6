@@ -8,18 +8,18 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
-go
-
-
-----9. function rent length, add to num 8
-
-if OBJECT_ID('dbo.lengthOfRental', 'Fn') is not null
-	drop function dbo.lengthOfRental
+use movinon_t6
 ;
 go
 
-Create function dbo.lengthOfRental(@UnitID as int)
+
+----9. function rent length, add to num 8 
+if OBJECT_ID('dbo.lengthOfRentalFN', 'Fn') is not null
+	drop function dbo.lengthOfRentalFN
+;
+go
+
+Create function dbo.lengthOfRentalFN(@UnitID as int)
 returns int
 as
 	begin
@@ -32,17 +32,20 @@ as
 ;
 go
 
-select dbo.lengthOfRental(10);
+select 
+dbo.lengthOfRentalFN(10)
+;
 go
 
-alter view dbo.StorageRevenueReportV
+
+create view dbo.StorageRevenueReport02V
 as select
 	concat_ws(', ', C.ContactLast, C.ContactFirst) as 'Customer Name',
 	R.rent as 'Monthly Rent',
 	UR.UnitID as 'Unit',
-	dbo.lengthOfRental(UR.UnitID) as 'Months Rented',
-	dbo.rentByWarehouse(UR.warehouseID) as 'Total rent for Warehouse',
-	dbo.TotalRentalIncome() as 'Income from all Warehouses'
+	dbo.lengthOfRentalFN(UR.UnitID) as 'Months Rented',
+	dbo.rentByWarehouseFN(UR.warehouseID) as 'Total rent for Warehouse',
+	dbo.TotalRentalIncomeFN() as 'Income from all Warehouses'
 	from production.unitrentals as UR
 	inner join sales.customers as C
 	On UR.CustID = C.CustID
@@ -52,6 +55,6 @@ as select
 go
 
 --test
-select * from dbo.StorageRevenueReportV
+select * from dbo.StorageRevenueReport02V
 ;
 go

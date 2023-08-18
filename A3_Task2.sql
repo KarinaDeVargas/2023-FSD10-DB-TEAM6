@@ -12,12 +12,12 @@ use movinon_t6
 go
 
 -- 2.
-if OBJECT_ID('dbo.EmployeesStatusVestedView', 'V') is not null
-	drop view dbo.EmployeesStatusVestedView
+if OBJECT_ID('dbo.EmployeesStatusVestedV', 'V') is not null
+	drop view dbo.EmployeesStatusVestedV
 ;
 go
 
-create view dbo.EmployeesStatusVestedView 
+create view dbo.EmployeesStatusVestedV 
 as select
 	EmpID as 'Employee ID',
 	CONCAT_WS(' ' , EmpFirst, EmpLast) as 'Employee Full Name', 
@@ -33,7 +33,7 @@ go
 
 --test
 select *
-from dbo.EmployeesStatusVestedView
+from dbo.EmployeesStatusVestedV
 order by 'Years Served' asc
 ;
 go

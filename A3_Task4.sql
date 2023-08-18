@@ -23,8 +23,8 @@ as select
     EmpID as 'Employee ID',
     CONCAT_WS(', ', EmpLast, EmpFirst) as 'Full Name',
     CASE
-        WHEN salary is null THEN cast(HourlyRate * 2080 as decimal(14, 2))
-        WHEN HourlyRate is null THEN cast(Salary as decimal(14,2))
+        WHEN salary is null THEN CONCAT('$ ', cast(HourlyRate * 2080 as decimal(14, 2)))
+        WHEN HourlyRate is null THEN CONCAT('$ ', cast(Salary as decimal(14,2)))
     END AS 'Earnings'
 FROM HumanResources.Employees
 ;

@@ -165,14 +165,6 @@ from dbo.PeakMonthsRentsV
 ;
 go
 
-
-
-
-
-
-
-
-
 --10.6 View of all FAQs
 if OBJECT_ID('FAQView', 'v') is not null
 	drop view FAQView

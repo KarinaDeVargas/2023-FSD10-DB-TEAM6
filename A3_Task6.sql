@@ -8,17 +8,19 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
-go
-
-----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
-if OBJECT_ID('dbo.WarehouseMangerReportLabels', 'V') is not null
-	drop view dbo.WarehouseMangerReportLabels
+use movinon_t6
 ;
 go
 
-Create view dbo.WarehouseMangerReportLabels
-as select
+----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
+if OBJECT_ID('dbo.WarehouseMangerReportLabelsV', 'V') is not null
+	drop view dbo.WarehouseMangerReportLabelsV
+;
+go
+
+Create view dbo.WarehouseMangerReportLabelsV
+as 
+select
 	W.WarehouseID as 'Warehouse ID',
 	concat_ws(', ', E.EmpLast, E.EmpFirst) as 'Warehouse Manager',
 	concat_ws(', ', W.address, W.city, W.state, W.zip) as 'Address',
@@ -33,6 +35,6 @@ go
 
 -- test
 select *
-from dbo.WarehouseMangerReportLabels
+from dbo.WarehouseMangerReportLabelsV
 ;
 go

@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	Warning trigger for Phone Numbers
+/* Purpose: create Warning trigger for Phone Numbers in Database MovinOn_T6
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye
@@ -8,7 +7,8 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
+use movinon_t6
+;
 go
 
 --3. Warning Trigger for phone #

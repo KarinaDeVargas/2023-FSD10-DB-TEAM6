@@ -8,7 +8,8 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
+use movinon_t6
+;
 go
 
 ----4. view of Emp salary's

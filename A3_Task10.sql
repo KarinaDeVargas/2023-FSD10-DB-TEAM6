@@ -8,12 +8,12 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
+use movinon_t6
+;
 go
 
 
-----10. addition questions
-
+----10. Additional questions that are frequently asked
 ----10.1 How many storage units did the company do last year?
 if OBJECT_ID('dbo.CountStorageUnitFN', 'Fn') is not null
 	drop function dbo.CountStorageUnitFN
@@ -58,9 +58,9 @@ BEGIN
 	@TotalCustomers INT,
 	@CustomersWithUnits INT, 
 	@Percentage DECIMAL(5, 2);
-    select @TotalCustomers = count(CustID)
+		select @TotalCustomers = count(CustID)
 	from Sales.Customers;
-    select @CustomersWithUnits = COUNT(CustID)
+		select @CustomersWithUnits = COUNT(CustID)
     from Production.UnitRentals;
 		select @Percentage = (@CustomersWithUnits * 100.0) / @TotalCustomers;
 	return @Percentage;
@@ -74,7 +74,6 @@ select dbo.CalculateCustomerPercentageFn() as 'Percent Of Customers Renting'
 go
 
 ----10.3 what was the greatest number of rents by any one indiviual?
-
 --create View used in function
 create view SubView103
 as
@@ -107,6 +106,34 @@ go
 -- 10.4 what is the average length of a rental period?
 
 -- 10.5 what are the company peak months for rents?
+
+if OBJECT_ID('dbo.PeakMonthsRentsV', 'V') is not null
+	drop view dbo.PeakMonthsRentsV
+;
+go
+
+create view	dbo.PeakMonthsRentsV
+as
+select
+	DateName(month, DateIn) as 'Month',
+	count(DateName(month, DateIn)) as 'Rent numbers'
+	from production.unitrentals
+	group by DateName(month, DateIn)
+	;
+go
+
+select *
+from dbo.PeakMonthsRentsV
+;
+go
+
+
+
+
+
+
+
+
 
 --10.6 View of all FAQs
 

@@ -9,15 +9,11 @@ Developed by: Team 6
 */
 
 -- switch to the current database
-use movinon_t6;
-go
-
-----5. function for age
-if OBJECT_ID('dbo.EmployeesAge', 'Fn') is not null
-	drop function dbo.EmployeesAge
+use movinon_t6
 ;
 go
 
+----5. function for age
 create function dbo.EmployeesAge
 (	
 	@EmpID as int

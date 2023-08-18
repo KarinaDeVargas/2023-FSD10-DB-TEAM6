@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	Function to Calculate years of Service
+/* Purpose: Create a Function to Calculate years of Service	in Database MovinOn_T6
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye
@@ -52,6 +51,7 @@ select * from HumanResources.Employees;
 go
 
 select EmpFirst, EmpLast, dbo.getEmployeeYearsServedFn(StartDate, EndDate) as 'Years Of Service'
-from HumanResources.Employees
+from HumanResources.Employees 
+order by 'Years Of Service' asc	 -- KVP: added Order by 
 ;
 go

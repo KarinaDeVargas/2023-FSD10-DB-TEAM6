@@ -99,7 +99,7 @@ go
 
 
 
---3. trigger to verfiy phone #
+--3. Warning Trigger for phone #
 if OBJECT_ID('HumanResources.VerifyPhone', 'T') is not null
 	drop trigger HumanResources.VerifyPhone
 ;
@@ -228,14 +228,14 @@ from dbo.EmployeeAgeYoS
 go
 
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
-create view dbo.WarehouseMangerReportLabels
+alter view dbo.WarehouseMangerReportLabels
 as select
 	W.WarehouseID as 'Warehouse ID',
 	concat_ws(', ', E.EmpLast, E.EmpFirst) as 'Warehouse Manager',
 	concat_ws(', ', W.address, W.city, W.state, W.zip) as 'Address',
 	W.Phone as 'Phone Number'
-	from Warehouses as W
-	Inner join employees as E
+	from production.Warehouses as W
+	Inner join humanResources.employees as E
 	on W.WarehouseID = E.WarehouseID
 	group by E.PositionID, W.WarehouseID, E.EmpLast, E.EmpFirst, W.Address, W.city, W.state, W.ZIP, W.phone
 	having E.PositionID = 2
@@ -419,16 +419,23 @@ select dbo.CalculateCustomerPercentageFn() as 'Percent Of Customers Renting'
 ;
 go
 -- 10.3 what was the greatest number of rents by any one indiviual?
-select CustID, count(unitID) from unitrentals
+create view SubView103
+as
+select count(unitID) as 'count' from production.unitrentals
 group by CustID;
 go
 
-create function dbo.MostNumRented()
+select count
+from SubView103;
+go
+
+
+alter function dbo.MostNumRented()
 returns int
 as
 begin
-declare @Highest as int
-select @Highest = greatest(count(UnitID)) from unitrentals group by CustID
+declare @highest as int
+select @highest = max(count) from SubView103
 return @Highest
 end
 ;
@@ -443,10 +450,10 @@ go
 
 --10.6 View of all FAQs
 
-Create view FAQView
+alter view FAQView
 as
 	Select
-		dbo.CountStorageUnitFN() as 'How many storage units did the company do last year?',
+		dbo.CountStorageUnitFN(2016) as 'How many storage units did the company do last year?',
 		dbo.PercentOfCustomersRentingFN() as 'What percentage of the customers rented at least one unit?',
 		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?'
 ;

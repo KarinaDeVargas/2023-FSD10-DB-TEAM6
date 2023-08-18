@@ -76,6 +76,11 @@ go
 ----10.3 what was the greatest number of rents by any one indiviual?
 
 --create View used in function
+if OBJECT_ID('subView103', 'v') is not null
+	drop view subview103
+;
+go
+
 create view SubView103
 as
 select count(unitID) as 'count' from production.unitrentals
@@ -88,6 +93,11 @@ from SubView103;
 go
 
 -- function to find highest num of units rented by one customer
+if OBJECT_ID('dbo.MostNumRented', 'Fn') is not null
+	drop function dbo.MostNumRented
+;
+go
+
 Create function dbo.MostNumRented()
 returns int
 as
@@ -106,15 +116,54 @@ go
 
 -- 10.4 what is the average length of a rental period?
 
+CREATE FUNCTION CalculateAvgRentalPeriod()
+RETURNS DECIMAL(10, 2)
+AS
+BEGIN
+    DECLARE @TotalDays INT
+    DECLARE @TotalRentals INT
+
+ 
+
+    SELECT @TotalDays = SUM(DATEDIFF(DAY, DateIn, DateOut)),
+           @TotalRentals = COUNT(UnitID)
+    FROM Rentals
+
+ 
+
+    IF @TotalRentals > 0
+    BEGIN
+        RETURN CAST(@TotalDays AS DECIMAL(10, 2)) / @TotalRentals
+    END
+    ELSE
+    BEGIN
+        RETURN 0.00
+    END
+END
+;
+go
+
+ 
+
+ 
+
+SELECT dbo.CalculateAvgRentalPeriod() AS AvgRentalPeriod
+;
+go
+
 -- 10.5 what are the company peak months for rents?
 
 --10.6 View of all FAQs
+if OBJECT_ID('FAQView', 'v') is not null
+	drop view FAQView
+;
+go
 
 Create view FAQView
 as
 	Select
 		dbo.CountStorageUnitFN(2016) as 'How many storage units did the company do last year?',
-		dbo.PercentOfCustomersRentingFN() as 'What percentage of the customers rented at least one unit?',
+		dbo.CalculateCustomerPercentageFn() as 'What percentage of the customers rented at least one unit?',
 		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?'
 ;
 go

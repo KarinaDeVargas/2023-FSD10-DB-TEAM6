@@ -24,10 +24,10 @@ SELECT
     cast((JD.MileageActual * 0.7 + JD.WeightActual * 0.2)as decimal(14,2)) AS 'Income',
     cast((JD.MileageActual * 0.7 + JD.WeightActual * 0.2 - (50 + JD.MileageActual * DR.MileageRate)) as decimal(14,2)) AS 'NetIncome',
 	cast((50 + (JD.MileageActual * DR.MileageRate))as decimal (14,2)) as 'Driver Pay'
-FROM JobDetails JD
-	INNER JOIN Drivers DR
+FROM Sales.JobDetails JD
+	INNER JOIN HumanResources.Drivers DR
 	ON JD.DriverID = DR.DriverID
-	INNER JOIN JobOrders as JO
+	INNER JOIN Sales.JobOrders as JO
 	ON JD.JobID = JO.JobID
 
 ;

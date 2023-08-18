@@ -13,18 +13,29 @@ go
 
 
 ----8. view StorageRevenueReport
+
+if OBJECT_ID('dbo.rentByWarehouse', 'Fn') is not null
+	drop function dbo.rentByWarehouse
+;
+go
+
 create function dbo.rentByWarehouse(@warehouseID as Char(5))
 returns decimal (14,2)
 as
 	begin
 	return
 	(select sum(U.rent)
-	from storageunits as U
-	inner join unitrentals as UR
+	from Production.storageunits as U
+	inner join Production.unitrentals as UR
 	on U.UnitID = UR.UnitID
 	group by UR.WarehouseID
 	having UR.WarehouseID = @warehouseID)
 	end
+;
+go
+
+if OBJECT_ID('dbo.TotalRentalIncome', 'Fn') is not null
+	drop function dbo.TotalRentalIncome
 ;
 go
 
@@ -34,10 +45,15 @@ as
 	begin
 	return
 	(select sum(U.rent)
-	from storageunits as U
-	inner join unitrentals as UR
+	from Production.storageunits as U
+	inner join Production.unitrentals as UR
 	on U.UnitID = UR.UnitID)
 	end
+;
+go
+
+if OBJECT_ID('dbo.StorageRevenueReportV', 'V') is not null
+	drop view dbo.StorageRevenueReportV
 ;
 go
 
@@ -48,10 +64,10 @@ as select
 	UR.UnitID as 'Unit',
 	dbo.rentByWarehouse(UR.warehouseID) as 'Total rent for Warehouse',
 	dbo.TotalRentalIncome() as 'Income from all Warehouses'
-	from unitrentals as UR
-	inner join customers as C
+	from Production.unitrentals as UR
+	inner join Sales.customers as C
 	On UR.CustID = C.CustID
-	Inner join storageunits as R
+	Inner join Production.storageunits as R
 	On UR.UnitID = R.UnitID
 ;
 go

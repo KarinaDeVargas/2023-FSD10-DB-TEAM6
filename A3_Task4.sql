@@ -11,7 +11,7 @@ Developed by: Team 6
 use movinon_t6;
 go
 
---4. view of Emp salary's
+----4. view of Emp salary's
 if OBJECT_ID('dbo.EmployeeSalariesV', 'V') is not null
 	drop view dbo.EmployeeSalariesV
 ;

@@ -43,8 +43,8 @@ go
 ---- view for age and years of service
 Create view dbo.EmployeeAgeYoS
 as
-select concat_ws(', ', EmpLast, EmpFirst) as 'Name', dbo.EmployeesAge(EmpID) as 'Age', dbo.EmployeesYearService(EmpID) as 'Years Of Service'
-from employees
+select concat_ws(', ', EmpLast, EmpFirst) as 'Name', dbo.EmployeesAge(EmpID) as 'Age', dbo.getEmployeeYearsServedFn(Startdate, EndDate) as 'Years Of Service'
+from HumanResources.employees
 ;
 go
 

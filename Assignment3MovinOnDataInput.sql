@@ -11,7 +11,7 @@ use movinOn_T6
 ;
 go
 
-bulk insert dbo.vehicles
+bulk insert Production.vehicles
 from 'h:princess/documents/1-johnabbot/movinon_data_source/vehicles.csv'
 with 
 (
@@ -22,7 +22,7 @@ with
 ;
 go
 
-bulk insert dbo.Customers
+bulk insert Sales.Customers
 from 'h:princess/documents/1-johnabbot/movinon_data_source/Customers.csv'
 with 
 (
@@ -33,12 +33,13 @@ with
 ;
 go
 
-alter table dbo.drivers
+--alter table drivers to match data
+alter table HumanResources.drivers
 	alter column EndDate datetime null
 ;
 go
 
-bulk insert dbo.Drivers
+bulk insert HumanResources.Drivers
 from 'h:princess/documents/1-johnabbot/movinon_data_source/Drivers.csv'
 with 
 (
@@ -49,7 +50,7 @@ with
 ;
 go
 
-bulk insert dbo.Employees
+bulk insert HumanResources.Employees
 from 'h:princess/documents/1-johnabbot/movinon_data_source/Employees.csv'
 with 
 (
@@ -60,7 +61,7 @@ with
 ;
 go
 
-bulk insert dbo.JobDetails
+bulk insert Sales.JobDetails
 from 'h:princess/documents/1-johnabbot/movinon_data_source/JobDetails1.csv'
 with 
 (
@@ -71,7 +72,7 @@ with
 ;
 go
 
-bulk insert dbo.JobOrders
+bulk insert Sales.JobOrders
 from 'h:princess/documents/1-johnabbot/movinon_data_source/JobOrders.csv'
 with 
 (
@@ -82,7 +83,7 @@ with
 ;
 go
 
-bulk insert dbo.Storageunits
+bulk insert Production.Storageunits
 from 'h:princess/documents/1-johnabbot/movinon_data_source/StorageUnits.csv'
 with 
 (
@@ -93,7 +94,7 @@ with
 ;
 go
 
-bulk insert dbo.UnitRentals
+bulk insert Production.UnitRentals
 from 'h:princess/documents/1-johnabbot/movinon_data_source/UnitRentals.csv'
 with 
 (
@@ -104,7 +105,7 @@ with
 ;
 go
 
-insert dbo.positions
+insert HumanResources.positions
 Values(1, 'CEO'),
 (2, 'Warehouse Manager'),
 (3, 'Administrative Assistant'),
@@ -115,7 +116,7 @@ Values(1, 'CEO'),
 ;
 go
 
-insert dbo.warehouses
+insert Production.warehouses
 values('OR-01', '123 Street Place', 'Oregon City', 'OR', '45321','(321) 123-9876', 1, 1),
 ('WA-01', '432 Place Street', 'Seattle', 'WA', '86742', '(321) 123-9999', 0, 1),
 ('WY-01', '66 Street Avenue', 'Bottstrap', 'WY', '54631', '(333) 325-5555', 1, 1)

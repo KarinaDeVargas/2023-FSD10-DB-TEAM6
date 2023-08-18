@@ -12,6 +12,11 @@ use movinon_t6;
 go
 
 ----6. view 'warehousemanagerReportLabels' contains,warehouseID, WarehouseManager, Mailing address, phone
+if OBJECT_ID('dbo.WarehouseMangerReportLabels', 'V') is not null
+	drop view dbo.WarehouseMangerReportLabels
+;
+go
+
 Create view dbo.WarehouseMangerReportLabels
 as select
 	W.WarehouseID as 'Warehouse ID',

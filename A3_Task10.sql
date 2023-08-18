@@ -75,6 +75,11 @@ go
 
 ----10.3 what was the greatest number of rents by any one indiviual?
 --create View used in function
+if OBJECT_ID('subView103', 'v') is not null
+	drop view subview103
+;
+go
+
 create view SubView103
 as
 select count(unitID) as 'count' from production.unitrentals
@@ -87,6 +92,11 @@ from SubView103;
 go
 
 -- function to find highest num of units rented by one customer
+if OBJECT_ID('dbo.MostNumRented', 'Fn') is not null
+	drop function dbo.MostNumRented
+;
+go
+
 Create function dbo.MostNumRented()
 returns int
 as
@@ -104,6 +114,34 @@ select dbo.MostNumRented() as 'Greatest Number of Rented Units by a customer'
 go
 
 -- 10.4 what is the average length of a rental period?
+
+if OBJECT_ID('dbo.CalculateAvgRentalPeriod', 'Fn') is not null
+	drop Function dbo.CalculateAvgRentalPeriod
+;
+go
+
+CREATE FUNCTION dbo.CalculateAvgRentalPeriod()
+RETURNS DECIMAL(10, 2)
+AS
+BEGIN
+    DECLARE @TotalMonths as INT,
+    @TotalRentals as INT,
+	@answer as decimal(10,2)
+
+    SELECT @TotalMonths = SUM(DATEDIFF(Month, DateIn, DateOut)),
+           @TotalRentals = COUNT(UnitID)
+    FROM Production.UnitRentals;
+
+  	select @answer = CAST(@Totalmonths AS DECIMAL(10, 2)) / @TotalRentals
+	return @answer
+end
+;
+go
+
+--test
+SELECT dbo.CalculateAvgRentalPeriod() AS 'Average Rental Period in Months'
+;
+go
 
 -- 10.5 what are the company peak months for rents?
 
@@ -136,13 +174,18 @@ go
 
 
 --10.6 View of all FAQs
+if OBJECT_ID('FAQView', 'v') is not null
+	drop view FAQView
+;
+go
 
 Create view FAQView
 as
 	Select
 		dbo.CountStorageUnitFN(2016) as 'How many storage units did the company do last year?',
-		dbo.PercentOfCustomersRentingFN() as 'What percentage of the customers rented at least one unit?',
-		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?'
+		dbo.CalculateCustomerPercentageFn() as 'What percentage of the customers rented at least one unit?',
+		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?',
+		dbo.CalculateAvgRentalPeriod() as 'What is the average lenght of a rental period?'
 ;
 go
 

@@ -13,7 +13,7 @@ drop database MovinOn_T6
 go
 
 -- create MovingOn_T6 database
-create database MovingOn_T6
+create database MovinOn_T6
 -- data file
 on primary
 (

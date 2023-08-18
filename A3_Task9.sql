@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	Add to Task 8, Length of time Rented
+/* Purpose: Add to Task 8, Length of time Rented
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye

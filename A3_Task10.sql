@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	Answer Additional questions (FAQ)
+/* Purpose: Answer Additional questions (FAQ)
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye

@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	View of Employee Salaries
+/* Purpose: View of Employee Salaries
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye

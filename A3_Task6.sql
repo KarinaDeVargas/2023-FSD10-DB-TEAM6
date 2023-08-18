@@ -1,5 +1,4 @@
-/* Purpose: Database MovinOn_T6
-	View for Warehouse Manager Report Labels
+/* Purpose: View for Warehouse Manager Report Labels
 Script Date: August 18, 2023
 Developed by: Team 6
 				Benjamin Pye

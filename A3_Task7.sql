@@ -12,6 +12,11 @@ use movinon_t6;
 go
 
 ----7.view JobvenueReport
+if OBJECT_ID('dbo.JobRevenueReportV', 'V') is not null
+	drop view dbo.JobRevenueReportV
+;
+go
+
 create view dbo.JobRevenueReportV
 as
 SELECT

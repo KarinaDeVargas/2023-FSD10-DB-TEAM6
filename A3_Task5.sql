@@ -41,6 +41,11 @@ go
 
 
 ---- view for age and years of service
+if OBJECT_ID('dbo.EmployeeAgeYoS', 'V') is not null
+	drop view dbo.EmployeeAgeYoS
+;
+go
+
 Create view dbo.EmployeeAgeYoS
 as
 select concat_ws(', ', EmpLast, EmpFirst) as 'Name', dbo.EmployeesAge(EmpID) as 'Age', dbo.getEmployeeYearsServedFn(Startdate, EndDate) as 'Years Of Service'

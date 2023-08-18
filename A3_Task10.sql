@@ -117,12 +117,12 @@ go
 
 -- 10.4 what is the average length of a rental period?
 
-if OBJECT_ID('CalculateAvgRentalPeriod', 'Fn') is not null
-	drop Function CalculateAvgRentalPeriod
+if OBJECT_ID('dbo.CalculateAvgRentalPeriod', 'Fn') is not null
+	drop Function dbo.CalculateAvgRentalPeriod
 ;
 go
 
-CREATE FUNCTION CalculateAvgRentalPeriod()
+CREATE FUNCTION dbo.CalculateAvgRentalPeriod()
 RETURNS DECIMAL(10, 2)
 AS
 BEGIN
@@ -158,7 +158,8 @@ as
 	Select
 		dbo.CountStorageUnitFN(2016) as 'How many storage units did the company do last year?',
 		dbo.CalculateCustomerPercentageFn() as 'What percentage of the customers rented at least one unit?',
-		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?'
+		dbo.MostNumRented() as 'What was the greatest number of rents by any one indiviual?',
+		dbo.CalculateAvgRentalPeriod() as 'What is the average lenght of a rental period?'
 ;
 go
 
